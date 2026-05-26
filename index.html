@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Plantilla premium para restaurantes urbanos con menú PDF desde Google Drive y reservas por Google Sheets.">
+  <title>URBANO RESTÓ · Restaurante Urbano</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header" id="inicio">
+    <nav class="navbar" aria-label="Navegación principal">
+      <a class="brand" href="#inicio" aria-label="Ir al inicio">
+        <span class="brand-mark">UR</span>
+        <span>URBANO RESTÓ</span>
+      </a>
+
+      <div class="nav-panel" id="nav-panel">
+        <a href="#inicio">Inicio</a>
+        <a href="#experiencia">Experiencia</a>
+        <a href="#carta">Menú</a>
+        <a href="#reservas">Reservas</a>
+        <a href="#donde-estamos">Dónde estamos</a>
+        <a href="#contacto">Contacto</a>
+      </div>
+
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar a modo claro" aria-pressed="false">
+        <span class="theme-toggle__sun" aria-hidden="true">☀</span>
+        <span class="theme-toggle__moon" aria-hidden="true">☾</span>
+      </button>
+      <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <a class="btn btn--small nav-cta" href="#reservas">Reservar</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero section-reveal">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-content">
+        <p class="script-word">comida todo el día</p>
+        <p class="eyebrow">Desayuno tardío · Café · Cocina urbana</p>
+        <h1>BRUNCH, COCINA & ENCUENTROS</h1>
+        <p class="hero-copy">Una experiencia urbana para comer, brindar y disfrutar.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#carta">Ver menú</a>
+          <a class="glow-btn" href="#reservas">Reservar mesa</a>
+        </div>
+      </div>
+      <div class="hero-card" aria-label="Datos destacados del restaurante">
+        <span>Cocina abierta</span>
+        <strong>Desde las 9 AM</strong>
+        <small>Café de especialidad · desayuno tardío · coctelería</small>
+      </div>
+    </section>
+
+    <section class="where section-pad section-reveal" id="donde-estamos">
+      <div class="section-heading">
+        <p class="eyebrow">Dónde estamos</p>
+        <h2>UN RINCÓN URBANO PARA ENCONTRARNOS</h2>
+      </div>
+      <div class="where-card">
+        <!-- Reemplazar por una foto real del frente, salón o terraza del restaurante. -->
+        <div class="where-gallery" aria-label="Imágenes del restaurante">
+          <!-- Reemplazar estas fotos por imágenes reales del interior y exterior del restaurante. -->
+          <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1000&q=82" alt="Interior cálido de restaurante urbano">
+          <img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1000&q=82" alt="Salón interior con estética industrial">
+          <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=82" alt="Exterior de restaurante urbano">
+        </div>
+        <div class="where-copy">
+          <h3>Estamos en el corazón de la ciudad</h3>
+          <p>Un espacio con impronta industrial, mesas para encuentros largos y una barra siempre lista para café, desayuno tardío o coctelería de tarde.</p>
+          <p><strong id="location-address">Av. Demo 123, Buenos Aires</strong></p>
+          <p id="location-hours">Martes a domingos · 09:00 a 00:00</p>
+          <a class="glow-btn" id="maps-link" href="#" target="_blank" rel="noreferrer">Cómo llegar</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="brunch-divider section-reveal" id="carta" aria-label="Desayuno tardío urbano">
+      <div class="brunch-divider__overlay">
+        <p class="script-word">
+          <span>Desayuno</span>
+          <span>todo el día,</span>
+          <span>todos los días</span>
+        </p>
+        <a class="glow-btn" id="menu-button" href="#" target="_blank" rel="noreferrer" aria-disabled="true">Ver menú actualizado</a>
+        <p class="status-message menu-status" id="menu-status"></p>
+      </div>
+    </section>
+
+    <section class="experience section-pad section-reveal" id="experiencia">
+      <div class="section-heading">
+        <p class="eyebrow">Experiencia urbana</p>
+        <h2>UN LUGAR PARA DISFRUTAR SIN APURO</h2>
+        <p>Platos con identidad, café bien preparado y una atmósfera cálida para desayunos largos, encuentros de trabajo o noches entre amigos.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <span>01</span>
+          <h3>Cocina artesanal</h3>
+          <p>Sabores honestos, productos frescos y una carta pensada para todos los momentos del día.</p>
+        </article>
+        <article class="feature-card">
+          <span>02</span>
+          <h3>Café & tragos</h3>
+          <p>Especialidad, clásicos renovados y bebidas de autor para acompañar cada mesa.</p>
+        </article>
+        <article class="feature-card">
+          <span>03</span>
+          <h3>Ambiente urbano</h3>
+          <p>Materiales nobles, luz baja y una estética industrial con alma de barrio.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="gallery section-reveal" aria-label="Galería gastronómica">
+      <!-- Reemplazar estas URLs por imágenes reales del restaurante en producción. -->
+      <img class="gallery-wide" src="https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=1200&q=82" alt="Plato principal de cocina urbana">
+      <img src="https://images.unsplash.com/photo-1484723091739-30a097e8f929?auto=format&fit=crop&w=900&q=82" alt="Desayuno tardío servido con tostadas y café">
+      <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=82" alt="Café de especialidad">
+      <img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=900&q=82" alt="Interior moderno de restaurante">
+      <img class="gallery-tall" src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1000&q=82" alt="Mesas preparadas en restaurante urbano">
+    </section>
+
+    <section class="reservations section-pad section-reveal" id="reservas">
+      <div class="section-heading">
+        <p class="eyebrow">Reservas</p>
+        <h2>RESERVÁ TU MESA</h2>
+        <p id="reservation-intro">Completá tus datos y el restaurante confirmará la disponibilidad por WhatsApp.</p>
+      </div>
+
+      <div class="reservation-grid">
+        <aside class="reservation-info">
+          <span class="reservation-tag">Mesa lista</span>
+          <h3>Tu plan empieza en la reserva</h3>
+          <p id="restaurant-name">URBANO RESTÓ</p>
+          <p id="reservation-hours">Martes a domingos · 09:00 a 00:00</p>
+          <div class="reservation-highlights" aria-label="Detalles de la reserva">
+            <span>Confirmación por WhatsApp</span>
+            <span>Mesas para desayuno tardío y cena</span>
+            <span>Opciones para fechas especiales</span>
+          </div>
+          <a class="glow-btn" id="reservation-whatsapp" href="#" target="_blank" rel="noreferrer">Consultar por WhatsApp</a>
+        </aside>
+
+        <div class="reservation-panel">
+          <div class="reservation-panel__head">
+            <span class="reservation-tag">Solicitud en línea</span>
+            <p>Elegí día, horario y cantidad de personas. Te confirmamos la mesa por WhatsApp.</p>
+          </div>
+
+          <div class="disabled-reservations" id="disabled-reservations" hidden>
+            <h3>Reservas momentáneamente pausadas</h3>
+            <p id="disabled-message">Por el momento tomamos reservas por WhatsApp.</p>
+            <a class="glow-btn" id="disabled-whatsapp" href="#" target="_blank" rel="noreferrer">Escribir por WhatsApp</a>
+          </div>
+
+          <form class="reservation-form" id="reservation-form">
+            <label>Nombre
+              <input type="text" name="nombre" required placeholder="Tu nombre">
+            </label>
+            <label>Teléfono
+              <input type="tel" name="telefono" required placeholder="11 2345 6789">
+            </label>
+            <label class="field-date">Fecha
+              <input type="date" name="fecha_reserva" required>
+            </label>
+            <label class="field-time">Hora
+              <input type="time" name="hora_reserva" required>
+            </label>
+            <label>Personas
+              <input type="number" name="personas" min="1" max="20" required value="2">
+            </label>
+            <label class="form-wide">Mensaje opcional
+              <textarea name="mensaje" rows="4" placeholder="Contanos si venís por una ocasión especial o necesitás algo puntual."></textarea>
+            </label>
+            <p class="status-message form-wide" id="availability-status"></p>
+            <button class="glow-btn form-wide" id="reservation-submit" type="submit">Enviar solicitud</button>
+            <p class="status-message form-wide" id="reservation-status"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="testimonials section-pad section-reveal">
+      <div class="section-heading">
+        <p class="eyebrow">Opiniones</p>
+        <h2>LO QUE DICEN EN LA MESA</h2>
+      </div>
+      <div class="testimonial-grid">
+        <article>
+          <span>★★★★★</span>
+          <p>“Desayuno tardío con onda, atención cercana y platos que entran por los ojos.”</p>
+          <strong>Martina R.</strong>
+        </article>
+        <article>
+          <span>★★★★★</span>
+          <p>“Ideal para ir con amigos. El lugar tiene una energía urbana muy cálida.”</p>
+          <strong>Leo F.</strong>
+        </article>
+        <article>
+          <span>★★★★★</span>
+          <p>“Café excelente, tragos bien hechos y una carta simple pero muy cuidada.”</p>
+          <strong>Camila S.</strong>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer section-pad" id="contacto">
+    <div>
+      <a class="brand" href="#inicio">
+        <span class="brand-mark">UR</span>
+        <span>URBANO RESTÓ</span>
+      </a>
+      <p>Sitio desarrollado para restaurantes modernos.</p>
+    </div>
+    <div class="footer-links">
+      <a id="footer-instagram" href="#" target="_blank" rel="noreferrer">Instagram</a>
+      <a id="footer-whatsapp" href="#" target="_blank" rel="noreferrer">WhatsApp</a>
+      <span id="footer-address">Av. Demo 123, Buenos Aires</span>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
