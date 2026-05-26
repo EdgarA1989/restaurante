@@ -171,7 +171,12 @@
               <input type="date" name="fecha_reserva" required>
             </label>
             <label class="field-time">Hora
-              <input type="time" name="hora_reserva" required>
+              <input type="hidden" name="hora_reserva">
+              <div class="time-picker" aria-label="Seleccionar hora de reserva">
+                <select id="hora-reserva-hora" aria-label="Hora" required></select>
+                <span aria-hidden="true">:</span>
+                <select id="hora-reserva-minutos" aria-label="Minutos" required></select>
+              </div>
             </label>
             <label>Personas
               <input type="number" name="personas" min="1" max="20" required value="2">

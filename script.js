@@ -194,7 +194,10 @@ function setupReservationForm() {
 
   const dateField = form.elements.fecha_reserva;
   const timeField = form.elements.hora_reserva;
+  const hourField = document.getElementById("hora-reserva-hora");
+  const minuteField = document.getElementById("hora-reserva-minutos");
   if (dateField) dateField.min = new Date().toISOString().slice(0, 10);
+  setupTimePicker({ dateField, timeField, hourField, minuteField });
 
   document.getElementById("menu-button")?.addEventListener("click", event => {
     if (!menuPdfUrl) event.preventDefault();
@@ -221,6 +224,7 @@ function setupReservationForm() {
     try {
       await submitReservation(data);
       form.reset();
+      syncTimeField(timeField, hourField, minuteField);
       availabilityOk = false;
       showReservationMessage("success", "Tu solicitud de reserva fue enviada. Te confirmaremos por WhatsApp.");
       setText("availability-status", "");
@@ -229,6 +233,41 @@ function setupReservationForm() {
       showReservationMessage("error", "No pudimos enviar la reserva. Podés contactarnos por WhatsApp.");
     }
   });
+}
+
+function setupTimePicker({ dateField, timeField, hourField, minuteField }) {
+  if (!timeField || !hourField || !minuteField) return;
+  if (!hourField.options.length) {
+    hourField.appendChild(new Option("Hora", ""));
+  }
+  for (let hour = 9; hour <= 23; hour += 1) {
+    const value = String(hour).padStart(2, "0");
+    hourField.appendChild(new Option(value, value));
+  }
+
+  if (!minuteField.options.length) {
+    minuteField.appendChild(new Option("Min", ""));
+  }
+  for (let minutes = 0; minutes < 60; minutes += 10) {
+    const value = String(minutes).padStart(2, "0");
+    minuteField.appendChild(new Option(value, value));
+  }
+
+  [hourField, minuteField].forEach(field => {
+    field.addEventListener("change", () => {
+      syncTimeField(timeField, hourField, minuteField);
+      if (dateField.value && timeField.value) {
+        checkAvailability(dateField.value, timeField.value);
+      }
+    });
+  });
+}
+
+function syncTimeField(timeField, hourField, minuteField) {
+  if (!timeField || !hourField || !minuteField) return;
+  timeField.value = hourField.value && minuteField.value
+    ? `${hourField.value}:${minuteField.value}`
+    : "";
 }
 
 // Consulta la hoja Disponibilidad antes de permitir enviar la reserva.

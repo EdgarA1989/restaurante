@@ -75,6 +75,7 @@ a {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
@@ -736,6 +737,7 @@ body.light .where-copy strong {
 }
 
 input,
+select,
 textarea {
   width: 100%;
   border: 1px solid var(--linea);
@@ -746,7 +748,7 @@ textarea {
 }
 
 input[type="date"],
-input[type="time"] {
+.time-picker select {
   min-height: 52px;
   color-scheme: dark;
   font-weight: 800;
@@ -754,6 +756,30 @@ input[type="time"] {
   background:
     linear-gradient(135deg, rgba(216, 166, 70, .1), transparent 46%),
     rgba(15, 15, 15, .78);
+}
+
+.time-picker select option {
+  color: var(--crema);
+  background: #333230;
+}
+
+.time-picker select option:checked,
+.time-picker select option:hover {
+  color: #111;
+  background: var(--dorado);
+}
+
+.time-picker {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: .55rem;
+}
+
+.time-picker span {
+  color: var(--dorado);
+  font-size: 1.2rem;
+  font-weight: 900;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator,
@@ -794,6 +820,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 body.light input,
+body.light select,
 body.light textarea {
   color: #111;
   background: rgba(255, 255, 255, .88);
@@ -801,11 +828,28 @@ body.light textarea {
 }
 
 body.light input[type="date"],
-body.light input[type="time"] {
+body.light .time-picker select {
   color-scheme: light;
+  background-color: #fffaf3;
   background:
     linear-gradient(135deg, rgba(216, 166, 70, .18), transparent 48%),
-    rgba(255, 255, 255, .92);
+    #fffaf3 !important;
+  box-shadow: inset 0 0 0 999px rgba(255, 250, 243, .72);
+}
+
+body.light input[type="date"]::-webkit-datetime-edit,
+body.light input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+body.light input[type="date"]::-webkit-datetime-edit-text,
+body.light input[type="date"]::-webkit-datetime-edit-month-field,
+body.light input[type="date"]::-webkit-datetime-edit-day-field,
+body.light input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #111;
+  background: transparent;
+}
+
+body.light .time-picker select option {
+  color: #111;
+  background: #fffaf3;
 }
 
 body.light input[type="date"]::-webkit-calendar-picker-indicator,
@@ -820,7 +864,12 @@ body.light .field-time::after {
   display: none;
 }
 
+.field-time::after {
+  display: none;
+}
+
 input:focus,
+select:focus,
 textarea:focus {
   border-color: var(--dorado);
 }
