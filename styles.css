@@ -21,6 +21,7 @@
 html {
   max-width: 100%;
   overflow-x: hidden;
+  scroll-padding-top: 86px;
   scroll-behavior: smooth;
 }
 
@@ -79,9 +80,12 @@ textarea {
 }
 
 .site-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 50;
+  width: 100%;
   border-bottom: 1px solid var(--linea);
   background: rgba(15, 15, 15, .78);
   backdrop-filter: blur(18px);
@@ -922,7 +926,7 @@ body.light .glow-btn {
   inset: -2px;
   z-index: -2;
   border-radius: 10px;
-  background: linear-gradient(45deg, var(--ladrillo), #ff7300, var(--dorado), var(--verde-oscuro), #00ffd5, #3158ff, #7a00ff, #ff4fb8, var(--ladrillo));
+  background: linear-gradient(45deg, #7a1f16, var(--ladrillo), #c96932, var(--dorado), #f1c96a, #b84a2d, #8f261c, var(--dorado), #7a1f16);
   background-size: 400%;
   filter: blur(5px);
   opacity: 0;
