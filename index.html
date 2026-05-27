@@ -217,6 +217,20 @@
     </section>
   </main>
 
+  <div class="gallery-lightbox" id="gallery-lightbox" hidden aria-modal="true" role="dialog" aria-label="Imagen ampliada de la galería">
+    <div class="gallery-lightbox__stage">
+      <button class="gallery-lightbox__control gallery-lightbox__control--prev" type="button" aria-label="Imagen anterior">‹</button>
+      <figure>
+        <div class="gallery-lightbox__topbar">
+          <button class="gallery-lightbox__close" type="button" aria-label="Cerrar imagen">×</button>
+        </div>
+        <img id="gallery-lightbox-image" src="" alt="">
+        <figcaption id="gallery-lightbox-caption"></figcaption>
+      </figure>
+      <button class="gallery-lightbox__control gallery-lightbox__control--next" type="button" aria-label="Imagen siguiente">›</button>
+    </div>
+  </div>
+
   <footer class="footer" id="contacto">
     <div class="footer-inner">
       <div class="footer-brand">

@@ -14,6 +14,8 @@ const SHEET_RESERVAS = "Reservas";
 const SHEET_CONFIG = "Configuracion";
 const SHEET_DISPONIBILIDAD = "Disponibilidad";
 const ESTADO_INICIAL = "Pendiente";
+const AUTO_CREAR_DISPONIBILIDAD = true;
+const CUPO_MAXIMO_DEFAULT = 20;
 
 function doGet(e) {
   try {
@@ -45,17 +47,17 @@ function doGet(e) {
 
 function doPost(e) {
   try {
-    const action = normalizeText(e && e.parameter && e.parameter.action);
+    const action = e && e.parameter && e.parameter.action;
 
-    if (action !== "reserva") {
-      return jsonResponse({ ok: false, error: "Acción no válida." });
+    if (normalizeText(action) !== "reserva") {
+      return jsonResponse({ ok: false, message: "Acción no válida." });
     }
 
     const data = parsePostData(e);
     const result = saveReservation(data);
     return jsonResponse(result);
   } catch (error) {
-    return jsonResponse({ ok: false, error: error.message || "No se pudo registrar la reserva." });
+    return jsonResponse({ ok: false, message: error.message || "No se pudo registrar la reserva." });
   }
 }
 
@@ -115,9 +117,16 @@ function checkAvailability(fecha, hora) {
     return { ok: false, disponible: false, motivo: "Fecha y hora son obligatorias." };
   }
 
-  const rowInfo = findAvailabilityRow(fecha, hora);
+  const fechaNormalizada = normalizeDateCell(fecha);
+  const horaNormalizada = normalizeTimeCell(hora);
+  let rowInfo = findAvailabilityRow(fechaNormalizada, horaNormalizada);
+
   if (!rowInfo) {
-    return { ok: true, disponible: false, motivo: "Horario no configurado" };
+    if (AUTO_CREAR_DISPONIBILIDAD) {
+      rowInfo = createAvailabilityRow(fechaNormalizada, horaNormalizada);
+    } else {
+      return { ok: true, disponible: false, motivo: `Horario no configurado: ${fechaNormalizada} ${horaNormalizada}` };
+    }
   }
 
   const disponible = normalizeYesNo(rowInfo.data.disponible) === "SI";
@@ -169,7 +178,11 @@ function saveReservation(data) {
 }
 
 function updateAvailability(fecha, hora, personas) {
-  const rowInfo = findAvailabilityRow(fecha, hora);
+  const fechaNormalizada = normalizeDateCell(fecha);
+  const horaNormalizada = normalizeTimeCell(hora);
+  const rowInfo = findAvailabilityRow(fechaNormalizada, horaNormalizada)
+    || (AUTO_CREAR_DISPONIBILIDAD ? createAvailabilityRow(fechaNormalizada, horaNormalizada) : null);
+
   if (!rowInfo) return { ok: false, motivo: "Horario no configurado" };
 
   const sheet = getSheet(SHEET_DISPONIBILIDAD);
@@ -194,6 +207,34 @@ function updateAvailability(fecha, hora, personas) {
   return { ok: true, reservas_tomadas: nuevasReservas, disponible };
 }
 
+function createAvailabilityRow(fecha, hora) {
+  const sheet = getSheet(SHEET_DISPONIBILIDAD);
+  const values = sheet.getDataRange().getValues();
+  const headers = values[0].map(normalizeText);
+  const cupoMaximo = getDefaultCapacity();
+  const row = new Array(headers.length).fill("");
+
+  setRowValue(row, headers, "fecha", fecha);
+  setRowValue(row, headers, "hora", hora);
+  setRowValue(row, headers, "cupo_maximo", cupoMaximo);
+  setRowValue(row, headers, "reservas_tomadas", 0);
+  setRowValue(row, headers, "disponible", "SI");
+
+  sheet.appendRow(row);
+  return findAvailabilityRow(fecha, hora);
+}
+
+function getDefaultCapacity() {
+  const config = getConfig();
+  const configuredCapacity = Number(config.cupo_default || config.cupo_maximo_default);
+  return configuredCapacity > 0 ? configuredCapacity : CUPO_MAXIMO_DEFAULT;
+}
+
+function setRowValue(row, headers, header, value) {
+  const index = headers.indexOf(header);
+  if (index >= 0) row[index] = value;
+}
+
 function getSheet(name) {
   const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = spreadsheet.getSheetByName(name);
@@ -206,14 +247,11 @@ function normalizeText(value) {
 }
 
 function parsePostData(e) {
-  const raw = e && e.postData && e.postData.contents ? e.postData.contents : "";
-  if (!raw) return {};
-
-  try {
-    return JSON.parse(raw);
-  } catch (error) {
-    throw new Error("El cuerpo del pedido no tiene un JSON válido.");
+  if (!e.postData || !e.postData.contents) {
+    throw new Error("No se recibieron datos de la reserva.");
   }
+
+  return JSON.parse(e.postData.contents);
 }
 
 function findAvailabilityRow(fecha, hora) {
@@ -221,6 +259,8 @@ function findAvailabilityRow(fecha, hora) {
   const values = sheet.getDataRange().getValues();
   if (values.length < 2) return null;
 
+  const fechaBuscada = normalizeDateCell(fecha);
+  const horaBuscada = normalizeTimeCell(hora);
   const headers = values[0].map(normalizeText);
   const fechaIndex = headers.indexOf("fecha");
   const horaIndex = headers.indexOf("hora");
@@ -233,7 +273,7 @@ function findAvailabilityRow(fecha, hora) {
     const rowFecha = normalizeDateCell(row[fechaIndex]);
     const rowHora = normalizeTimeCell(row[horaIndex]);
 
-    if (rowFecha === fecha && rowHora === hora) {
+    if (rowFecha === fechaBuscada && rowHora === horaBuscada) {
       const data = {};
       headers.forEach((header, headerIndex) => {
         data[header] = normalizeCellValue(row[headerIndex], header);
@@ -249,14 +289,33 @@ function normalizeDateCell(value) {
   if (Object.prototype.toString.call(value) === "[object Date]" && !isNaN(value)) {
     return Utilities.formatDate(value, Session.getScriptTimeZone(), "yyyy-MM-dd");
   }
-  return String(value || "").trim();
+
+  const text = String(value || "").trim();
+  const isoMatch = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
+
+  const localMatch = text.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+  if (localMatch) {
+    const day = localMatch[1].padStart(2, "0");
+    const month = localMatch[2].padStart(2, "0");
+    return `${localMatch[3]}-${month}-${day}`;
+  }
+
+  return text;
 }
 
 function normalizeTimeCell(value) {
   if (Object.prototype.toString.call(value) === "[object Date]" && !isNaN(value)) {
     return Utilities.formatDate(value, Session.getScriptTimeZone(), "HH:mm");
   }
-  return String(value || "").trim().slice(0, 5);
+
+  const text = String(value || "").trim();
+  const match = text.match(/^(\d{1,2}):(\d{2})/);
+  if (match) {
+    return `${match[1].padStart(2, "0")}:${match[2]}`;
+  }
+
+  return text.slice(0, 5);
 }
 
 function normalizeCellValue(value, header) {

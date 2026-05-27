@@ -36,6 +36,10 @@ body {
   font-family: "Montserrat", system-ui, sans-serif;
 }
 
+body.lightbox-open {
+  overflow: hidden;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -488,11 +492,101 @@ body.light .testimonial-grid article {
   display: block;
   object-fit: cover;
   filter: saturate(.95) contrast(1.02);
+  cursor: zoom-in;
+  transition: filter .2s ease, transform .2s ease;
+}
+
+.gallery img:hover,
+.gallery img:focus-visible {
+  filter: saturate(1.04) contrast(1.06);
+  transform: scale(1.012);
+  outline: 2px solid rgba(216, 166, 70, .72);
+  outline-offset: -2px;
 }
 
 .gallery-wide,
 .gallery-tall {
   grid-column: span 2;
+}
+
+.gallery-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 2rem);
+  background: rgba(8, 8, 8, .88);
+  backdrop-filter: blur(16px);
+}
+
+.gallery-lightbox[hidden] {
+  display: none;
+}
+
+.gallery-lightbox__stage {
+  width: min(1320px, 100%);
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 52px;
+  align-items: center;
+  gap: clamp(.6rem, 2vw, 1rem);
+}
+
+.gallery-lightbox figure {
+  min-width: 0;
+  display: grid;
+  gap: .75rem;
+  margin: 0;
+}
+
+.gallery-lightbox__topbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.gallery-lightbox img {
+  width: min(1120px, 100%);
+  max-height: min(78dvh, 760px);
+  justify-self: center;
+  object-fit: contain;
+  border: 1px solid rgba(244, 239, 231, .2);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .52);
+}
+
+.gallery-lightbox figcaption {
+  max-width: min(760px, 100%);
+  margin: 0;
+  justify-self: center;
+  color: var(--crema);
+  text-align: center;
+  font-weight: 700;
+}
+
+.gallery-lightbox__close,
+.gallery-lightbox__control {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(244, 239, 231, .24);
+  border-radius: 999px;
+  color: var(--crema);
+  background: rgba(15, 15, 15, .72);
+  cursor: pointer;
+}
+
+.gallery-lightbox__close {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.gallery-lightbox__control {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.gallery-lightbox__close:hover,
+.gallery-lightbox__control:hover {
+  color: #15110d;
+  background: var(--dorado);
 }
 
 .reservation-grid,
@@ -1380,5 +1474,24 @@ body.light .footer-contact span {
   .hero-actions .btn,
   .glow-btn {
     width: 100%;
+  }
+
+  .gallery-lightbox {
+    padding: .8rem;
+  }
+
+  .gallery-lightbox__stage {
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    gap: .4rem;
+  }
+
+  .gallery-lightbox__close,
+  .gallery-lightbox__control {
+    width: 40px;
+    height: 40px;
+  }
+
+  .gallery-lightbox img {
+    max-height: 72dvh;
   }
 }

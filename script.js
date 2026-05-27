@@ -11,6 +11,7 @@ function initApp() {
   initMenu();
   initHomeLinks();
   initReveal();
+  initGalleryLightbox();
   loadConfig();
   loadMenuPdf();
   setupReservationForm();
@@ -139,11 +140,13 @@ async function loadConfig() {
     }
   } catch (error) {
     console.warn("No se pudo cargar la configuración.", error);
-    if (form) form.hidden = true;
-    if (disabledBox) {
-      disabledBox.hidden = false;
-      setText("disabled-message", "No pudimos cargar las reservas. Contactanos por WhatsApp.");
-    }
+    appConfig = {
+      reservas_activas: "SI",
+      whatsapp: CONFIG.WHATSAPP || CONFIG.WHATSAPP_FALLBACK,
+    };
+    toggleReservationForm(true);
+    setText("reservation-intro", "No pudimos cargar la configuración, pero podés completar la solicitud y también contactarnos por WhatsApp.");
+    updateWhatsappLinks();
   }
 }
 
@@ -220,6 +223,7 @@ function setupReservationForm() {
       return;
     }
 
+    syncTimeField(timeField, hourField, minuteField);
     const data = Object.fromEntries(new FormData(form).entries());
     try {
       await submitReservation(data);
@@ -230,7 +234,7 @@ function setupReservationForm() {
       setText("availability-status", "");
     } catch (error) {
       console.warn("No se pudo enviar la reserva.", error);
-      showReservationMessage("error", "No pudimos enviar la reserva. Podés contactarnos por WhatsApp.");
+      showReservationMessage("error", error.message || "No pudimos enviar la reserva. Podés contactarnos por WhatsApp.");
     }
   });
 }
@@ -308,15 +312,25 @@ async function submitReservation(data) {
     return { ok: true, demo: true };
   }
 
+  console.log("Reserva enviada a Apps Script:", data);
   const response = await fetch(`${CONFIG.APPS_SCRIPT_URL}?action=reserva`, {
     method: "POST",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({
-      ...data,
-    }),
+    body: JSON.stringify(data),
   });
 
-  const result = await response.json();
+  const text = await response.text();
+  console.log("Respuesta cruda Apps Script:", text);
+
+  let result;
+  try {
+    result = JSON.parse(text);
+  } catch (error) {
+    console.error("No se pudo parsear la respuesta de Apps Script como JSON.", error);
+    throw new Error(text || "Apps Script no devolvió una respuesta JSON válida.");
+  }
+
+  console.log("Respuesta parseada Apps Script:", result);
   if (!response.ok || result.ok === false) {
     throw new Error(result.error || result.message || "No se pudo registrar la reserva.");
   }
@@ -395,4 +409,83 @@ function initReveal() {
   }, { threshold: .12 });
 
   sections.forEach(section => observer.observe(section));
+}
+
+function initGalleryLightbox() {
+  const lightbox = document.getElementById("gallery-lightbox");
+  const lightboxImage = document.getElementById("gallery-lightbox-image");
+  const caption = document.getElementById("gallery-lightbox-caption");
+  const closeButton = lightbox?.querySelector(".gallery-lightbox__close");
+  const prevButton = lightbox?.querySelector(".gallery-lightbox__control--prev");
+  const nextButton = lightbox?.querySelector(".gallery-lightbox__control--next");
+  const galleryImages = Array.from(document.querySelectorAll(".gallery img"));
+  if (!lightbox || !lightboxImage || !caption || !galleryImages.length) return;
+  let currentIndex = 0;
+
+  const renderImage = index => {
+    currentIndex = (index + galleryImages.length) % galleryImages.length;
+    const image = galleryImages[currentIndex];
+    lightboxImage.src = image.currentSrc || image.src;
+    lightboxImage.alt = image.alt || "Imagen de la galería";
+    caption.textContent = image.alt || "";
+  };
+
+  const closeLightbox = ({ fromHistory = false } = {}) => {
+    if (lightbox.hidden) return;
+    lightbox.hidden = true;
+    document.body.classList.remove("lightbox-open");
+    lightboxImage.removeAttribute("src");
+    lightboxImage.alt = "";
+    caption.textContent = "";
+
+    if (!fromHistory && history.state?.galleryLightbox) {
+      history.back();
+    }
+  };
+
+  const openLightbox = index => {
+    const image = galleryImages[index];
+    currentIndex = index;
+    lightboxImage.src = image.currentSrc || image.src;
+    lightboxImage.alt = image.alt || "Imagen de la galería";
+    caption.textContent = image.alt || "";
+    lightbox.hidden = false;
+    document.body.classList.add("lightbox-open");
+
+    if (!history.state?.galleryLightbox) {
+      history.pushState({ galleryLightbox: true }, "", "#galeria-imagen");
+    }
+  };
+
+  const showPrevious = () => renderImage(currentIndex - 1);
+  const showNext = () => renderImage(currentIndex + 1);
+
+  galleryImages.forEach((image, index) => {
+    image.tabIndex = 0;
+    image.setAttribute("role", "button");
+    image.setAttribute("aria-label", `Ampliar ${image.alt || "imagen de la galería"}`);
+    image.addEventListener("click", () => openLightbox(index));
+    image.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openLightbox(index);
+      }
+    });
+  });
+
+  closeButton?.addEventListener("click", () => closeLightbox());
+  prevButton?.addEventListener("click", showPrevious);
+  nextButton?.addEventListener("click", showNext);
+  lightbox.addEventListener("click", event => {
+    if (event.target === lightbox) closeLightbox();
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeLightbox();
+    if (lightbox.hidden) return;
+    if (event.key === "ArrowLeft") showPrevious();
+    if (event.key === "ArrowRight") showNext();
+  });
+  window.addEventListener("popstate", () => {
+    if (!lightbox.hidden) closeLightbox({ fromHistory: true });
+  });
 }
