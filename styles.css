@@ -1057,7 +1057,8 @@ textarea:focus {
   text-transform: uppercase;
 }
 
-body.light .glow-btn {
+body.light .glow-btn,
+body.light .footer-col .glow-btn {
   color: var(--blanco);
   background: #111;
   border-color: rgba(255, 255, 255, .9);
@@ -1246,13 +1247,23 @@ body.light .footer::before {
   max-width: 360px;
 }
 
-.footer-socials .fsocial,
+.footer-socials .fsocial-wa,
+.footer-socials .fsocial-ig {
+  color: #fff;
+}
+
+.footer-socials .fsocial:not(.fsocial-wa):not(.fsocial-ig),
 .footer-col a,
 .footer-contact span {
   color: var(--gris-texto);
 }
 
-body.light .footer-socials .fsocial,
+body.light .footer-socials .fsocial-wa,
+body.light .footer-socials .fsocial-ig {
+  color: #fff;
+}
+
+body.light .footer-socials .fsocial:not(.fsocial-wa):not(.fsocial-ig),
 body.light .footer-col a,
 body.light .footer-contact span {
   color: #3d352d;
@@ -1272,25 +1283,31 @@ body.light .footer-contact span {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 0;
+  border: 2.5px solid rgba(255, 255, 255, 0.38);
   border-radius: 999px;
   color: #fff;
-  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+  transform: translateY(-3px) scale(1.04);
+  filter: saturate(2) brightness(0.83);
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease, border-color .2s ease;
+}
+
+body.light .fsocial {
+  border-color: #0E0E0E;
 }
 
 .fsocial:hover {
-  transform: translateY(-3px) scale(1.04);
-  filter: saturate(1.08);
+  transform: translateY(-5px) scale(1.08);
+  filter: saturate(2.2) brightness(0.94);
 }
 
 .fsocial-wa {
   background: linear-gradient(145deg, #31df72, #10b957);
-  box-shadow: 0 14px 32px rgba(37, 211, 102, .28);
+  box-shadow: 0 14px 28px rgba(37, 211, 102, .22);
+  color: #fff;
 }
 
 .fsocial-wa:hover {
-  color: #fff;
-  box-shadow: 0 18px 40px rgba(37, 211, 102, .52);
+  box-shadow: 0 18px 36px rgba(37, 211, 102, .38);
 }
 
 .fsocial-ig {
@@ -1298,12 +1315,12 @@ body.light .footer-contact span {
     radial-gradient(circle at 28% 110%, #feda75 0 18%, transparent 38%),
     radial-gradient(circle at 18% 12%, #7a39ff 0 28%, transparent 48%),
     linear-gradient(135deg, #405de6 0%, #833ab4 34%, #e1306c 68%, #fd1d1d 100%);
-  box-shadow: 0 14px 32px rgba(225, 48, 108, .28);
+  box-shadow: 0 14px 28px rgba(225, 48, 108, .22);
+  color: #fff;
 }
 
 .fsocial-ig:hover {
-  color: #fff;
-  box-shadow: 0 18px 40px rgba(225, 48, 108, .52);
+  box-shadow: 0 18px 36px rgba(225, 48, 108, .38);
 }
 
 .fsocial-ig svg,
